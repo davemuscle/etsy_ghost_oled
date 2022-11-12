@@ -1,0 +1,410 @@
+#define F_CPU 16000000
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include <util/delay.h>
+
+#define BB_SCLK PB1
+#define BB_MOSI PB3
+#define BB_DC   PB4
+
+#define SPI_DELAY 1
+
+int dc = 0;
+
+void spi_write(int byte, int dc){
+    int sreg = byte;
+    int isolate;
+
+    // setup dc
+    if(dc) {
+        PORTB |= (1 << BB_DC);
+    } else {
+        PORTB &= ~(1 << BB_DC);
+    }
+
+    for(int i = 0; i < 8; i++){
+    
+        // mask bit to xfer
+        isolate = (sreg >> 7) & 1;
+        sreg = sreg << 1;
+
+        // setup data
+        if(isolate) {
+            PORTB |= (1 << BB_MOSI);
+        } else {
+            PORTB &= ~(1 << BB_MOSI);
+        }
+        _delay_us(SPI_DELAY);
+
+        // rising edge
+        PORTB |=  (1 << BB_SCLK);
+        _delay_us(SPI_DELAY);
+
+        // falling edge
+        PORTB &= ~(1 << BB_SCLK);
+    }
+}
+
+void command_write(int byte){
+    spi_write(byte, 0);
+}
+
+void pixel_write(int num, int byte){
+    for(int i = 0; i < num; i++){
+        spi_write(byte, 1);
+    }
+}
+
+void draw_Cropped_000(void){
+    pixel_write(266, 0);
+    pixel_write(1, 248);
+    pixel_write(1, 255);
+    pixel_write(1, 63);
+    pixel_write(5, 0);
+    pixel_write(1, 248);
+    pixel_write(1, 255);
+    pixel_write(1, 63);
+    pixel_write(5, 0);
+    pixel_write(1, 252);
+    pixel_write(1, 255);
+    pixel_write(1, 63);
+    pixel_write(5, 0);
+    pixel_write(1, 252);
+    pixel_write(1, 255);
+    pixel_write(1, 63);
+    pixel_write(5, 0);
+    pixel_write(3, 255);
+    pixel_write(5, 0);
+    pixel_write(3, 255);
+    pixel_write(1, 1);
+    pixel_write(4, 0);
+    pixel_write(3, 255);
+    pixel_write(1, 1);
+    pixel_write(3, 0);
+    pixel_write(1, 128);
+    pixel_write(3, 255);
+    pixel_write(1, 1);
+    pixel_write(3, 0);
+    pixel_write(1, 192);
+    pixel_write(3, 255);
+    pixel_write(1, 3);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(3, 255);
+    pixel_write(1, 7);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(3, 255);
+    pixel_write(1, 15);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(3, 255);
+    pixel_write(1, 15);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(3, 255);
+    pixel_write(1, 15);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(3, 255);
+    pixel_write(1, 15);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(3, 255);
+    pixel_write(1, 15);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(3, 255);
+    pixel_write(1, 15);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(3, 255);
+    pixel_write(1, 15);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(1, 31);
+    pixel_write(1, 126);
+    pixel_write(1, 240);
+    pixel_write(1, 15);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(1, 7);
+    pixel_write(1, 60);
+    pixel_write(1, 224);
+    pixel_write(1, 15);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(1, 7);
+    pixel_write(1, 60);
+    pixel_write(1, 224);
+    pixel_write(1, 15);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(1, 7);
+    pixel_write(1, 60);
+    pixel_write(1, 224);
+    pixel_write(1, 15);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(1, 7);
+    pixel_write(1, 60);
+    pixel_write(1, 224);
+    pixel_write(1, 15);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(1, 7);
+    pixel_write(1, 60);
+    pixel_write(1, 224);
+    pixel_write(1, 15);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(1, 7);
+    pixel_write(1, 60);
+    pixel_write(1, 224);
+    pixel_write(1, 15);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(1, 7);
+    pixel_write(1, 60);
+    pixel_write(1, 224);
+    pixel_write(1, 15);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(1, 7);
+    pixel_write(1, 60);
+    pixel_write(1, 224);
+    pixel_write(1, 15);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(1, 7);
+    pixel_write(1, 60);
+    pixel_write(1, 224);
+    pixel_write(1, 15);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(1, 7);
+    pixel_write(1, 60);
+    pixel_write(1, 224);
+    pixel_write(1, 15);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(3, 255);
+    pixel_write(1, 15);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(3, 255);
+    pixel_write(1, 15);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(3, 255);
+    pixel_write(1, 15);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(3, 255);
+    pixel_write(1, 15);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(3, 255);
+    pixel_write(1, 7);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(3, 255);
+    pixel_write(1, 7);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(1, 255);
+    pixel_write(1, 239);
+    pixel_write(1, 255);
+    pixel_write(1, 7);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(1, 255);
+    pixel_write(1, 239);
+    pixel_write(1, 255);
+    pixel_write(1, 7);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(3, 255);
+    pixel_write(1, 7);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(3, 255);
+    pixel_write(1, 7);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(3, 255);
+    pixel_write(1, 7);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(3, 255);
+    pixel_write(1, 7);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(3, 255);
+    pixel_write(1, 7);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(3, 255);
+    pixel_write(1, 7);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(3, 255);
+    pixel_write(1, 7);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(3, 255);
+    pixel_write(1, 7);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(3, 255);
+    pixel_write(1, 7);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(3, 255);
+    pixel_write(1, 7);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(3, 255);
+    pixel_write(1, 7);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(3, 255);
+    pixel_write(1, 7);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(3, 255);
+    pixel_write(1, 7);
+    pixel_write(3, 0);
+    pixel_write(1, 192);
+    pixel_write(3, 255);
+    pixel_write(1, 7);
+    pixel_write(3, 0);
+    pixel_write(1, 192);
+    pixel_write(3, 255);
+    pixel_write(1, 7);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(3, 255);
+    pixel_write(1, 7);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(3, 255);
+    pixel_write(1, 7);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(3, 255);
+    pixel_write(1, 7);
+    pixel_write(3, 0);
+    pixel_write(1, 192);
+    pixel_write(3, 255);
+    pixel_write(1, 7);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(3, 255);
+    pixel_write(1, 7);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(3, 255);
+    pixel_write(1, 7);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(3, 255);
+    pixel_write(1, 7);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(3, 255);
+    pixel_write(1, 7);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(3, 255);
+    pixel_write(1, 7);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(3, 255);
+    pixel_write(1, 7);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(3, 255);
+    pixel_write(1, 7);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(3, 255);
+    pixel_write(1, 7);
+    pixel_write(3, 0);
+    pixel_write(1, 224);
+    pixel_write(3, 255);
+    pixel_write(1, 7);
+    pixel_write(3, 0);
+    pixel_write(1, 192);
+    pixel_write(3, 255);
+    pixel_write(1, 7);
+    pixel_write(3, 0);
+    pixel_write(1, 128);
+    pixel_write(3, 255);
+    pixel_write(1, 1);
+    pixel_write(4, 0);
+    pixel_write(3, 255);
+    pixel_write(1, 1);
+    pixel_write(4, 0);
+    pixel_write(3, 255);
+    pixel_write(5, 0);
+    pixel_write(3, 255);
+    pixel_write(5, 0);
+    pixel_write(1, 252);
+    pixel_write(1, 255);
+    pixel_write(1, 63);
+    pixel_write(5, 0);
+    pixel_write(1, 252);
+    pixel_write(1, 255);
+    pixel_write(1, 63);
+    pixel_write(5, 0);
+    pixel_write(1, 248);
+    pixel_write(1, 255);
+    pixel_write(1, 63);
+    pixel_write(5, 0);
+    pixel_write(1, 248);
+    pixel_write(1, 255);
+    pixel_write(1, 31);
+    pixel_write(179, 0);
+}
+ISR (TIMER0_OVF_vect){
+    //spi_write(0x7F, dc);
+    //dc = !dc;
+}
+
+void timer_setup() {
+    TCCR0A=0x00;
+    TCCR0B=0x00;
+    TCCR0B |= (1<<CS00)|(1<<CS02);
+    sei();
+    TCNT0=0;
+    TIMSK|=(1<<TOIE0);
+}
+
+int main (void){
+    // outputs
+    DDRB |= (1 << BB_SCLK);
+    DDRB |= (1 << BB_MOSI);
+    DDRB |= (1 << BB_DC);
+
+    // zeros
+    PORTB &= ~(1 << BB_SCLK);
+    PORTB &= ~(1 << BB_MOSI);
+    PORTB &= ~(1 << BB_DC);
+
+    _delay_ms(100);
+    
+    command_write(0xAF); // display on
+    command_write(0x20); // set address mode
+    command_write(0x01); // set address mode - vertical
+
+    pixel_write((128*64)/8, 0);
+    pixel_write((128*64)/8, 255);
+
+    draw_Cropped_000();
+
+    timer_setup();
+    while(1);
+}
+
+
