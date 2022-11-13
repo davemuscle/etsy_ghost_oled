@@ -105,7 +105,6 @@ ISR (TIMER0_OVF_vect){
     }
 }
 
-
 // 16 ms
 void timer_setup() {
     TCCR0A=0x00;
@@ -115,6 +114,7 @@ void timer_setup() {
     TCNT0=0;
     TIMSK|=(1<<TOIE0);
 }
+
 
 void animate(){
     for(int i = 0; i <  15; i++) display_image_blocking(img_000, sizeof(img_000));
