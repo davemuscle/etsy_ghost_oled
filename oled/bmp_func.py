@@ -26,18 +26,29 @@ bc = bmp_bytes[0]
 count = 0
 
 for b in bmp_bytes:
-    if((b == bc):
+    if((b == bc) and (count != 256)):
         count += 1
-    else:
-        cmd_bytes.append((count, bc))
+    elif(((b == bc) and (count == 256)) or (b != bc)):
+        cmd_bytes.append((count-1, bc))
         count = 1
     bc = b
 cmd_bytes.append((count, bc))
 
-print("void draw_" + file + "(void){")
-for c in cmd_bytes:
-    print("    pixel_write" + str(c) + ";")
-print("}");
+#print(len(cmd_bytes))
+
+#print("void draw_" + file + "(void){")
+#for c in cmd_bytes:
+#    print("    pixel_write" + str(c) + ";")
+#print("}");
+
+print("const uint8_t PROGMEM " + file + " [" + str(2*len(cmd_bytes)) + "] = {", end = "")
+for j in range(0, len(cmd_bytes)-1):
+    print(str(cmd_bytes[j][0]), end = ",")
+    print(str(cmd_bytes[j][1]), end = ",")
+
+print(str(cmd_bytes[len(cmd_bytes)-1][0]), end = ",")
+print(str(cmd_bytes[len(cmd_bytes)-1][1]), end = "};")
+
 #total = 0
 #for x in cmd_bytes:
 #    total = total + x[0]

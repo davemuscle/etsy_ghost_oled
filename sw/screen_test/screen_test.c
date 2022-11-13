@@ -1,6 +1,7 @@
 #define F_CPU 16000000
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <avr/pgmspace.h>
 #include <util/delay.h>
 
 #define BB_SCLK PB1
@@ -9,11 +10,11 @@
 
 #define SPI_DELAY 1
 
-int dc = 0;
+uint8_t dc = 0;
 
-void spi_write(int byte, int dc){
-    int sreg = byte;
-    int isolate;
+void spi_write(uint8_t byte, uint8_t dc){
+    uint8_t sreg = byte;
+    uint8_t isolate;
 
     // setup dc
     if(dc) {
@@ -22,7 +23,7 @@ void spi_write(int byte, int dc){
         PORTB &= ~(1 << BB_DC);
     }
 
-    for(int i = 0; i < 8; i++){
+    for(uint8_t i = 0; i < 8; i++){
     
         // mask bit to xfer
         isolate = (sreg >> 7) & 1;
@@ -45,328 +46,28 @@ void spi_write(int byte, int dc){
     }
 }
 
-void command_write(int byte){
+void command_write(uint8_t byte){
     spi_write(byte, 0);
 }
 
-void pixel_write(int num, int byte){
-    for(int i = 0; i < num; i++){
+//void pixel_write(uint8_t num, uint8_t byte){
+//    for(int i = 0; i <= num; i++){
+//        spi_write(byte, 1);
+//    }
+//}
+
+void pixel_write(int num, uint8_t byte){
+    for(int i =0; i <= num; i++){
         spi_write(byte, 1);
     }
 }
 
-void draw_Cropped_000(void){
-    pixel_write(266, 0);
-    pixel_write(1, 248);
-    pixel_write(1, 255);
-    pixel_write(1, 63);
-    pixel_write(5, 0);
-    pixel_write(1, 248);
-    pixel_write(1, 255);
-    pixel_write(1, 63);
-    pixel_write(5, 0);
-    pixel_write(1, 252);
-    pixel_write(1, 255);
-    pixel_write(1, 63);
-    pixel_write(5, 0);
-    pixel_write(1, 252);
-    pixel_write(1, 255);
-    pixel_write(1, 63);
-    pixel_write(5, 0);
-    pixel_write(3, 255);
-    pixel_write(5, 0);
-    pixel_write(3, 255);
-    pixel_write(1, 1);
-    pixel_write(4, 0);
-    pixel_write(3, 255);
-    pixel_write(1, 1);
-    pixel_write(3, 0);
-    pixel_write(1, 128);
-    pixel_write(3, 255);
-    pixel_write(1, 1);
-    pixel_write(3, 0);
-    pixel_write(1, 192);
-    pixel_write(3, 255);
-    pixel_write(1, 3);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(3, 255);
-    pixel_write(1, 7);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(3, 255);
-    pixel_write(1, 15);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(3, 255);
-    pixel_write(1, 15);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(3, 255);
-    pixel_write(1, 15);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(3, 255);
-    pixel_write(1, 15);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(3, 255);
-    pixel_write(1, 15);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(3, 255);
-    pixel_write(1, 15);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(3, 255);
-    pixel_write(1, 15);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(1, 31);
-    pixel_write(1, 126);
-    pixel_write(1, 240);
-    pixel_write(1, 15);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(1, 7);
-    pixel_write(1, 60);
-    pixel_write(1, 224);
-    pixel_write(1, 15);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(1, 7);
-    pixel_write(1, 60);
-    pixel_write(1, 224);
-    pixel_write(1, 15);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(1, 7);
-    pixel_write(1, 60);
-    pixel_write(1, 224);
-    pixel_write(1, 15);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(1, 7);
-    pixel_write(1, 60);
-    pixel_write(1, 224);
-    pixel_write(1, 15);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(1, 7);
-    pixel_write(1, 60);
-    pixel_write(1, 224);
-    pixel_write(1, 15);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(1, 7);
-    pixel_write(1, 60);
-    pixel_write(1, 224);
-    pixel_write(1, 15);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(1, 7);
-    pixel_write(1, 60);
-    pixel_write(1, 224);
-    pixel_write(1, 15);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(1, 7);
-    pixel_write(1, 60);
-    pixel_write(1, 224);
-    pixel_write(1, 15);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(1, 7);
-    pixel_write(1, 60);
-    pixel_write(1, 224);
-    pixel_write(1, 15);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(1, 7);
-    pixel_write(1, 60);
-    pixel_write(1, 224);
-    pixel_write(1, 15);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(3, 255);
-    pixel_write(1, 15);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(3, 255);
-    pixel_write(1, 15);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(3, 255);
-    pixel_write(1, 15);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(3, 255);
-    pixel_write(1, 15);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(3, 255);
-    pixel_write(1, 7);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(3, 255);
-    pixel_write(1, 7);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(1, 255);
-    pixel_write(1, 239);
-    pixel_write(1, 255);
-    pixel_write(1, 7);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(1, 255);
-    pixel_write(1, 239);
-    pixel_write(1, 255);
-    pixel_write(1, 7);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(3, 255);
-    pixel_write(1, 7);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(3, 255);
-    pixel_write(1, 7);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(3, 255);
-    pixel_write(1, 7);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(3, 255);
-    pixel_write(1, 7);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(3, 255);
-    pixel_write(1, 7);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(3, 255);
-    pixel_write(1, 7);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(3, 255);
-    pixel_write(1, 7);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(3, 255);
-    pixel_write(1, 7);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(3, 255);
-    pixel_write(1, 7);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(3, 255);
-    pixel_write(1, 7);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(3, 255);
-    pixel_write(1, 7);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(3, 255);
-    pixel_write(1, 7);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(3, 255);
-    pixel_write(1, 7);
-    pixel_write(3, 0);
-    pixel_write(1, 192);
-    pixel_write(3, 255);
-    pixel_write(1, 7);
-    pixel_write(3, 0);
-    pixel_write(1, 192);
-    pixel_write(3, 255);
-    pixel_write(1, 7);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(3, 255);
-    pixel_write(1, 7);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(3, 255);
-    pixel_write(1, 7);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(3, 255);
-    pixel_write(1, 7);
-    pixel_write(3, 0);
-    pixel_write(1, 192);
-    pixel_write(3, 255);
-    pixel_write(1, 7);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(3, 255);
-    pixel_write(1, 7);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(3, 255);
-    pixel_write(1, 7);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(3, 255);
-    pixel_write(1, 7);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(3, 255);
-    pixel_write(1, 7);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(3, 255);
-    pixel_write(1, 7);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(3, 255);
-    pixel_write(1, 7);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(3, 255);
-    pixel_write(1, 7);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(3, 255);
-    pixel_write(1, 7);
-    pixel_write(3, 0);
-    pixel_write(1, 224);
-    pixel_write(3, 255);
-    pixel_write(1, 7);
-    pixel_write(3, 0);
-    pixel_write(1, 192);
-    pixel_write(3, 255);
-    pixel_write(1, 7);
-    pixel_write(3, 0);
-    pixel_write(1, 128);
-    pixel_write(3, 255);
-    pixel_write(1, 1);
-    pixel_write(4, 0);
-    pixel_write(3, 255);
-    pixel_write(1, 1);
-    pixel_write(4, 0);
-    pixel_write(3, 255);
-    pixel_write(5, 0);
-    pixel_write(3, 255);
-    pixel_write(5, 0);
-    pixel_write(1, 252);
-    pixel_write(1, 255);
-    pixel_write(1, 63);
-    pixel_write(5, 0);
-    pixel_write(1, 252);
-    pixel_write(1, 255);
-    pixel_write(1, 63);
-    pixel_write(5, 0);
-    pixel_write(1, 248);
-    pixel_write(1, 255);
-    pixel_write(1, 63);
-    pixel_write(5, 0);
-    pixel_write(1, 248);
-    pixel_write(1, 255);
-    pixel_write(1, 31);
-    pixel_write(179, 0);
-}
+//uint8_t test [32][32];
+//const uint8_t __attribute__((section(".text"))) test [16][32] = {
+//};
+
+#include "img.h"
+
 ISR (TIMER0_OVF_vect){
     //spi_write(0x7F, dc);
     //dc = !dc;
@@ -398,10 +99,15 @@ int main (void){
     command_write(0x20); // set address mode
     command_write(0x01); // set address mode - vertical
 
-    pixel_write((128*64)/8, 0);
-    pixel_write((128*64)/8, 255);
+    //pixel_write(1, 255);
+    pixel_write(((128*64)/8)-1, 0);
+    pixel_write(((128*64)/8)-1, 255);
 
-    draw_Cropped_000();
+    for(int i = 0; i < 622; i += 2){
+        uint8_t a = pgm_read_byte(&Cropped_000[i+0]);
+        uint8_t b = pgm_read_byte(&Cropped_000[i+1]);
+        pixel_write(a, b);
+    }
 
     timer_setup();
     while(1);
