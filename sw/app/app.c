@@ -123,11 +123,11 @@ void animate(){
     for(int i = 0; i <  2; i++) display_image_blocking(img_011, sizeof(img_011));
     for(int i = 0; i <  2; i++) display_image_blocking(img_013, sizeof(img_013));
     for(int i = 0; i <  2; i++) display_image_blocking(img_014, sizeof(img_014));
-    for(int i = 0; i <  2; i++) display_image_blocking(img_016, sizeof(img_016));
+    for(int i = 0; i <  2; i++) display_image_blocking(img_000, sizeof(img_000));
     for(int i = 0; i <  1; i++) display_image_blocking(img_018, sizeof(img_018));
     for(int i = 0; i <  1; i++) display_image_blocking(img_019, sizeof(img_019));
     for(int i = 0; i <  1; i++) display_image_blocking(img_020, sizeof(img_020));
-    for(int i = 0; i <  1; i++) display_image_blocking(img_021, sizeof(img_021));
+    for(int i = 0; i <  1; i++) display_image_blocking(img_000, sizeof(img_000));
     for(int i = 0; i <  3; i++) display_image_blocking(img_022, sizeof(img_022));
 }
 

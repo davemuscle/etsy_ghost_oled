@@ -1,11 +1,13 @@
 
-BITMAPS = $(shell ls bitmaps | grep ".bmp")
+STYLE=sobel
+FOLDER=bitmaps
+BITMAPS = $(shell ls $(FOLDER)/$(STYLE) | grep ".bmp")
 
 all: clean $(addsuffix .h, $(addprefix include/, $(basename $(BITMAPS))))
 
 .SECONDEXPANSION:
-include/%.h: bitmaps/$$*.bmp
-	./bmp_func.py bitmaps $* > $@
+include/%.h: $(FOLDER)/$(STYLE)/$$*.bmp
+	./bmp_func.py $(FOLDER)/$(STYLE) $* > $@
 	cat $@ >> include/img.h
 
 .PHONY:
