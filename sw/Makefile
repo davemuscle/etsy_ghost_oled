@@ -4,7 +4,7 @@ FLASH = $(FPGA)/flash.tcl
 LOADER = $(FPGA)/loader.py
 
 main.o: $(FILES)
-	avr-gcc -O1 -mmcu=attiny85 $^ -o $@
+	avr-gcc -Wall -Os -DF_CPU=16000000 -mmcu=attiny85 -I../../oled/include $^ -o $@
 
 main.log: main.o
 	avr-objdump -D $^ > $@

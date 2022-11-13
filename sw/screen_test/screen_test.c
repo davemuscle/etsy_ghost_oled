@@ -4,6 +4,8 @@
 #include <avr/pgmspace.h>
 #include <util/delay.h>
 
+#include "img.h"
+
 #define BB_SCLK PB1
 #define BB_MOSI PB3
 #define BB_DC   PB4
@@ -50,23 +52,12 @@ void command_write(uint8_t byte){
     spi_write(byte, 0);
 }
 
-//void pixel_write(uint8_t num, uint8_t byte){
-//    for(int i = 0; i <= num; i++){
-//        spi_write(byte, 1);
-//    }
-//}
-
 void pixel_write(int num, uint8_t byte){
     for(int i =0; i <= num; i++){
         spi_write(byte, 1);
     }
 }
 
-//uint8_t test [32][32];
-//const uint8_t __attribute__((section(".text"))) test [16][32] = {
-//};
-
-#include "img.h"
 
 ISR (TIMER0_OVF_vect){
     //spi_write(0x7F, dc);
@@ -99,13 +90,19 @@ int main (void){
     command_write(0x20); // set address mode
     command_write(0x01); // set address mode - vertical
 
+    // these modes do not work, vertical addressing must be hardwired in the PCB
+    //command_write(0x00); // set address mode - horizontal
+    //command_write(0x02); // set address mode - page
+
     //pixel_write(1, 255);
     pixel_write(((128*64)/8)-1, 0);
-    pixel_write(((128*64)/8)-1, 255);
+    //pixel_write(((128*64)/8)-1, 255);
 
-    for(int i = 0; i < 622; i += 2){
-        uint8_t a = pgm_read_byte(&Cropped_000[i+0]);
-        uint8_t b = pgm_read_byte(&Cropped_000[i+1]);
+    //pixel_write(Cropped_000[0], Cropped_000[1]);
+
+    for(int i = 0; i < sizeof(img_000); i += 2){
+        uint8_t a = pgm_read_byte(&img_000[i+0]);
+        uint8_t b = pgm_read_byte(&img_000[i+1]);
         pixel_write(a, b);
     }
 

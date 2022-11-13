@@ -2,9 +2,12 @@
 
 from PIL import Image
 import numpy as np
+import sys
 
-file = 'Cropped_000'
-img = np.array(Image.open('bitmaps/Cropped_000.bmp'))
+path = sys.argv[1]
+file = sys.argv[2]
+
+img = np.array(Image.open(path + '/' + file + '.bmp'))
 (rows, cols) = img.shape
 # cols should be divisible by 8
 
@@ -25,14 +28,16 @@ cmd_bytes = []
 bc = bmp_bytes[0]
 count = 0
 
+LIMIT = 256
+
 for b in bmp_bytes:
-    if((b == bc) and (count != 256)):
+    if((b == bc) and (count != LIMIT)):
         count += 1
-    elif(((b == bc) and (count == 256)) or (b != bc)):
+    elif(((b == bc) and (count == LIMIT)) or (b != bc)):
         cmd_bytes.append((count-1, bc))
         count = 1
     bc = b
-cmd_bytes.append((count, bc))
+cmd_bytes.append((count-1, bc))
 
 #print(len(cmd_bytes))
 
@@ -41,15 +46,55 @@ cmd_bytes.append((count, bc))
 #    print("    pixel_write" + str(c) + ";")
 #print("}");
 
-print("const uint8_t PROGMEM " + file + " [" + str(2*len(cmd_bytes)) + "] = {", end = "")
+print("const uint8_t " + file + " [" + str(2*len(cmd_bytes)) + "] PROGMEM = {", end = "")
 for j in range(0, len(cmd_bytes)-1):
     print(str(cmd_bytes[j][0]), end = ",")
     print(str(cmd_bytes[j][1]), end = ",")
-
 print(str(cmd_bytes[len(cmd_bytes)-1][0]), end = ",")
 print(str(cmd_bytes[len(cmd_bytes)-1][1]), end = "};")
+print("");
+
+
+#print("const uint8_t PROGMEM " + file + "_inst [" + str(len(cmd_bytes)) + "] = {", end = "")
+#for j in range(0, len(cmd_bytes)-1):
+#    print(str(cmd_bytes[j][0]), end = ",")
+#print(str(cmd_bytes[len(cmd_bytes)-1][0]), end = "};")
+#print("");
+#
+#print("const uint8_t PROGMEM " + file + "_data [" + str(len(cmd_bytes)) + "] = {", end = "")
+#for j in range(0, len(cmd_bytes)-1):
+#    print(str(cmd_bytes[j][1]), end = ",")
+#print(str(cmd_bytes[len(cmd_bytes)-1][1]), end = "};")
+#print("");
+
+#print("const uint16_t PROGMEM " + file + " [" + str(len(cmd_bytes)) + "] = {", end = "")
+#for j in range(0, len(cmd_bytes)-1):
+#    xx = ((cmd_bytes[j][1] << 8) + cmd_bytes[j][0]) & 0xFFFF
+#    print("0x" + format(xx, '04x'), end = ",")
+#xx = ((cmd_bytes[len(cmd_bytes)-1][1] << 8) + cmd_bytes[len(cmd_bytes)-1][0]) & 0xFFFF
+#print("0x"+format(xx, '04x'), end = "};")
+#print("");
+
+#tmp = Image.new( 'RGB', (64,128), "black") # Create a new black image
+#pixels = tmp.load() # Create the pixel map
+#ii = 0
+#jj = 0
+#for c in cmd_bytes:
+#    for i in range(0, c[0]+1):
+#        for j in range(0, 8):
+#            pixels[jj, ii] = (255*((c[1] >> j)&1), 1, 1)
+#            if(jj == cols-1):
+#                jj = 0
+#                ii += 1
+#            else:
+#                jj += 1
+#tmp.show()
+
+#for x in cmd_bytes:
+#    print(x)
 
 #total = 0
 #for x in cmd_bytes:
-#    total = total + x[0]
+#    total = total + x[0]+1
+#print(str(total))
 
