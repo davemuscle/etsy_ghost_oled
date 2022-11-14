@@ -1,4 +1,3 @@
-//#define F_CPU 16000000
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
@@ -11,22 +10,21 @@
 #define BB_DC   PB4
 #define BB_CS   PB0
 
-#define SPI_DELAY 1
-
-#define SCREEN_PIXELS 8192
-#define SCREEN_BYTES  1024
-#define FRAME_TOGGLE_MAX 1
+#define SPI_DELAY         1
+#define SCREEN_PIXELS     8192
+#define SCREEN_BYTES      1024
+#define FRAME_TOGGLE_MAX  1
 #define SCROLL_COLUMN_MIN 5
 #define SCROLL_COLUMN_MAX 95
-#define SCROLL_STEP 3
+#define SCROLL_STEP       3
 
 volatile uint8_t frame_advance = 0;
 volatile uint8_t frame_toggle = 0;
 
-volatile uint8_t global_scroll_offset = 0;
-volatile uint8_t global_scroll_offset_prev = 0;
+volatile uint8_t global_scroll_offset    = 0;
 volatile uint8_t global_scroll_direction = 0;
 
+// bit bang spi
 void spi_write(uint8_t byte, uint8_t dc){
     uint8_t sreg = byte;
     uint8_t isolate;
@@ -61,16 +59,19 @@ void spi_write(uint8_t byte, uint8_t dc){
     _delay_us(SPI_DELAY);
 }
 
+// send spi command with dc = 0
 void command_write(uint8_t byte){
     spi_write(byte, 0);
 }
 
+// send an array of spi commands with dc = 1
 void pixel_write(int num, uint8_t byte){
     for(int i =0; i < num+1; i++){
         spi_write(byte, 1);
     }
 }
 
+// put an image on screen using the custom format from bmp script
 void display_image(const uint8_t *img, int len, int pixels){
     int total_pixels = pixels;
     int transfer_pixels;
@@ -90,6 +91,7 @@ void display_image(const uint8_t *img, int len, int pixels){
     }
 }
 
+// draw blanks on the screen before displaying a portion of the image
 void display_image_scrolled(const uint8_t *img, int len, int scroll){
     int scroll_pixels;
     int image_pixels;
@@ -104,22 +106,14 @@ void display_image_scrolled(const uint8_t *img, int len, int scroll){
     display_image(img, len, image_pixels);
 }
 
+// wait for the interrupt to fire before displaying image
 void display_image_blocking(const uint8_t *img, int len){
     while(!frame_advance);
     frame_advance = 0;
     display_image_scrolled(img, len, global_scroll_offset);
 }
 
-//void debug_image(const uint8_t *img, int len){
-//    for(int i = 0; i < len; i += 2){
-//        uint8_t a = pgm_read_byte(&img[i+0]);
-//        uint8_t b = pgm_read_byte(&img[i+1]);
-//        command_write(a);
-//        spi_write(b, 1);
-//        //pixel_write(a, b);
-//    }
-//}
-
+// timer interupt
 ISR (TIMER0_OVF_vect){
     if(frame_toggle == FRAME_TOGGLE_MAX-1){
         frame_advance = 1;
@@ -129,7 +123,7 @@ ISR (TIMER0_OVF_vect){
     }
 }
 
-// 16 ms
+// setup timer, this runs at 16 ms. Not sure how with 1024 prescaler but whatever
 void timer_setup() {
     TCCR0A=0x00;
     TCCR0B=0x00;
@@ -139,6 +133,7 @@ void timer_setup() {
     TIMSK|=(1<<TOIE0);
 }
 
+// set global column to the left with bounding checks
 void scroll_left(){
     int16_t next_column;
     if(global_scroll_direction == 1){
@@ -151,6 +146,7 @@ void scroll_left(){
     }
 }
 
+// set global column to the right with bounding checks
 void scroll_right(){
     int16_t next_column;
     if(global_scroll_direction == 0){
@@ -163,6 +159,7 @@ void scroll_right(){
     }
 }
 
+// ghost animation
 void animate(){
     for(int i = 0; i < 15; i++) display_image_blocking(img_000, sizeof(img_000));
     scroll_right();
@@ -207,29 +204,18 @@ int main (void){
     //command_write(0x00); // set address mode - horizontal
     //command_write(0x02); // set address mode - page
 
-    pixel_write(SCREEN_BYTES-1, 0x00);
-    //pixel_write(SCREEN_BYTES-1, 0xFF);
+    // blank screen for debug
+    //pixel_write(SCREEN_BYTES-1, 0x00);
+
+    frame_advance           = 0;
+    frame_toggle            = 0;
+    global_scroll_offset    = 0;
+    global_scroll_direction = 0;
 
     timer_setup();
 
-    //_delay_ms(1000);
-    //display_image_scrolled(img_000, sizeof(img_000), 0);
-    //_delay_ms(1000);
-    //display_image_scrolled(img_000, sizeof(img_000), 10);
-    global_scroll_offset = 0;
-    global_scroll_direction = 0;
-
     while(1){
         animate();
-        //for(int i = 0; i < 255; i++){
-        //    animate();
-        //    scroll_right();
-        //}
-        //for(int i = 0; i < 255; i++){
-        //    animate();
-        //    scroll_left();
-        //}
-    //    scroll();
     }
 }
 
