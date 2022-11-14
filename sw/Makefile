@@ -1,10 +1,10 @@
-FILES ?= main.c
-FPGA = ../../fpga
+SOURCE ?= app.c
+FPGA = ../fpga
 FLASH = $(FPGA)/flash.tcl
 LOADER = $(FPGA)/loader.py
 
-main.o: $(FILES)
-	avr-gcc -Wall -Os -DF_CPU=16000000 -mmcu=attiny85 -I../../oled/include $^ -o $@
+main.o: $(SOURCE)
+	avr-gcc -Wall -Os -DF_CPU=16000000 -mmcu=attiny85 -I../oled/include $^ -o $@
 
 main.log: main.o
 	avr-objdump -D $^ > $@
