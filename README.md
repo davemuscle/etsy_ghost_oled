@@ -2,6 +2,8 @@
 
 Small single-weekend project to display an animated pixel-art ghost on a transparent OLED.
 
+![gif](hw/ghost_oled.gif)
+
 ## Hardware
 
 * ATTiny85
@@ -42,3 +44,25 @@ Releasing reset would then run the design.
 The ghost animation was converted saved manually as monochrome bitmaps. These were then processed
 into a compressed custom format so that they could be loaded directly into the ATTiny flash memory.
 The C-code can then loop through the arrays and display them on the screen.
+
+## Building
+
+```
+    # create header files from bitmaps
+    cd oled
+    make
+    
+    # build software
+    cd sw
+    make
+
+    # create fpga design
+    cd fpga
+    make
+    # load onto hardware
+    make prog
+    # open system-console
+    make console
+    # load ATTiny flash (within system-console)
+    source flash.tcl
+```
