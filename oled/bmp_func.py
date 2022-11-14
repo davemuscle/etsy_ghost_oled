@@ -46,17 +46,17 @@ cmd_bytes.append((count-1, bc))
 #    print("    pixel_write" + str(c) + ";")
 #print("}");
 
-#print("const uint8_t " + file + " [" + str(2*len(cmd_bytes)) + "] PROGMEM = {", end = "")
-#for j in range(0, len(cmd_bytes)-1):
-#    print(str(cmd_bytes[j][0]), end = ",")
-#    print(str(cmd_bytes[j][1]), end = ",")
-#print(str(cmd_bytes[len(cmd_bytes)-1][0]), end = ",")
-#print(str(cmd_bytes[len(cmd_bytes)-1][1]), end = "};")
-#print("");
+print("const uint8_t " + file + " [" + str(2*len(cmd_bytes)) + "] PROGMEM = {", end = "")
+for j in range(0, len(cmd_bytes)-1):
+    print(str(cmd_bytes[j][0]), end = ",")
+    print(str(cmd_bytes[j][1]), end = ",")
+print(str(cmd_bytes[len(cmd_bytes)-1][0]), end = ",")
+print(str(cmd_bytes[len(cmd_bytes)-1][1]), end = "};")
+print("");
 
 
-for x in cmd_bytes:
-    print(x)
+#for x in cmd_bytes:
+#    print(x)
 
 #total = 0
 #for x in cmd_bytes:

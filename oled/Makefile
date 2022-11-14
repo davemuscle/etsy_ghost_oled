@@ -1,5 +1,5 @@
 
-STYLE=sobel
+STYLE=sobel_rotated
 FOLDER=bitmaps
 BITMAPS = $(shell ls $(FOLDER)/$(STYLE) | grep ".bmp")
 

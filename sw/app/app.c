@@ -13,33 +13,36 @@
 
 #define SPI_DELAY 1
 
-#define SCREEN_BYTES 1024
-#define FRAME_TOGGLE_MAX 4
+#define SCREEN_PIXELS 8192
+#define SCREEN_BYTES  1024
+#define FRAME_TOGGLE_MAX 1
+#define SCROLL_COLUMN_MIN 5
+#define SCROLL_COLUMN_MAX 95
+#define SCROLL_STEP 3
 
 volatile uint8_t frame_advance = 0;
 volatile uint8_t frame_toggle = 0;
 
+volatile uint8_t global_scroll_offset = 0;
+volatile uint8_t global_scroll_offset_prev = 0;
+volatile uint8_t global_scroll_direction = 0;
+
 void spi_write(uint8_t byte, uint8_t dc){
     uint8_t sreg = byte;
     uint8_t isolate;
-
     // setup dc
     if(dc) {
         PORTB |= (1 << BB_DC);
     } else {
         PORTB &= ~(1 << BB_DC);
     }
-
     //setup cs_n
     PORTB &= ~(1 << BB_CS);
     _delay_us(SPI_DELAY);
-
     for(uint8_t i = 0; i < 8; i++){
-    
         // mask bit to xfer
         isolate = (sreg >> 7) & 1;
         sreg = sreg << 1;
-
         // setup data
         if(isolate) {
             PORTB |= (1 << BB_MOSI);
@@ -47,15 +50,12 @@ void spi_write(uint8_t byte, uint8_t dc){
             PORTB &= ~(1 << BB_MOSI);
         }
         _delay_us(SPI_DELAY);
-
         // rising edge
         PORTB |=  (1 << BB_SCLK);
         _delay_us(SPI_DELAY);
-
         // falling edge
         PORTB &= ~(1 << BB_SCLK);
     }
-
     // deactivate cs
     PORTB |= (1 << BB_CS);
     _delay_us(SPI_DELAY);
@@ -71,30 +71,54 @@ void pixel_write(int num, uint8_t byte){
     }
 }
 
-
-void display_image(const uint8_t *img, int len){
-    for(int i = 0; i < len; i += 2){
-        uint8_t a = pgm_read_byte(&img[i+0]);
-        uint8_t b = pgm_read_byte(&img[i+1]);
-        pixel_write(a, b);
+void display_image(const uint8_t *img, int len, int pixels){
+    int total_pixels = pixels;
+    int transfer_pixels;
+    if(pixels > 0){
+        for(int i = 0; i < len; i += 2){
+            uint8_t a = pgm_read_byte(&img[i+0]);
+            uint8_t b = pgm_read_byte(&img[i+1]);
+            transfer_pixels = (a + 1) * 8;
+            if(transfer_pixels >= total_pixels){
+                pixel_write((total_pixels/8)-1, b);
+                break;
+            } else {
+                pixel_write(a, b);
+                total_pixels -= transfer_pixels;
+            }
+        }
     }
+}
+
+void display_image_scrolled(const uint8_t *img, int len, int scroll){
+    int scroll_pixels;
+    int image_pixels;
+    int scroll_m = scroll & 127;
+    if(scroll_m == 0){
+        scroll_pixels = 0;
+    } else {
+        scroll_pixels = scroll_m * 64;
+        pixel_write((scroll_pixels/8)-1, 0x00);
+    }
+    image_pixels = SCREEN_PIXELS - scroll_pixels;
+    display_image(img, len, image_pixels);
 }
 
 void display_image_blocking(const uint8_t *img, int len){
     while(!frame_advance);
     frame_advance = 0;
-    display_image(img, len);
+    display_image_scrolled(img, len, global_scroll_offset);
 }
 
-void debug_image(const uint8_t *img, int len){
-    for(int i = 0; i < len; i += 2){
-        uint8_t a = pgm_read_byte(&img[i+0]);
-        uint8_t b = pgm_read_byte(&img[i+1]);
-        command_write(a);
-        spi_write(b, 1);
-        //pixel_write(a, b);
-    }
-}
+//void debug_image(const uint8_t *img, int len){
+//    for(int i = 0; i < len; i += 2){
+//        uint8_t a = pgm_read_byte(&img[i+0]);
+//        uint8_t b = pgm_read_byte(&img[i+1]);
+//        command_write(a);
+//        spi_write(b, 1);
+//        //pixel_write(a, b);
+//    }
+//}
 
 ISR (TIMER0_OVF_vect){
     if(frame_toggle == FRAME_TOGGLE_MAX-1){
@@ -115,14 +139,43 @@ void timer_setup() {
     TIMSK|=(1<<TOIE0);
 }
 
+void scroll_left(){
+    int16_t next_column;
+    if(global_scroll_direction == 1){
+        next_column = global_scroll_offset - SCROLL_STEP;
+        if(next_column <= SCROLL_COLUMN_MIN && global_scroll_offset > SCROLL_COLUMN_MIN){
+            global_scroll_direction ^= 1;
+        } else {
+            global_scroll_offset = next_column;
+        }
+    }
+}
+
+void scroll_right(){
+    int16_t next_column;
+    if(global_scroll_direction == 0){
+        next_column = global_scroll_offset + SCROLL_STEP;
+        if(next_column >= SCROLL_COLUMN_MAX && global_scroll_offset < SCROLL_COLUMN_MAX){
+            global_scroll_direction ^= 1;
+        } else {
+            global_scroll_offset = next_column;
+        }
+    }
+}
 
 void animate(){
-    for(int i = 0; i <  15; i++) display_image_blocking(img_000, sizeof(img_000));
+    for(int i = 0; i < 15; i++) display_image_blocking(img_000, sizeof(img_000));
+    scroll_right();
     for(int i = 0; i <  2; i++) display_image_blocking(img_008, sizeof(img_008));
+    scroll_right();
     for(int i = 0; i <  1; i++) display_image_blocking(img_010, sizeof(img_010));
+    scroll_right();
     for(int i = 0; i <  2; i++) display_image_blocking(img_011, sizeof(img_011));
+    scroll_left();
     for(int i = 0; i <  2; i++) display_image_blocking(img_013, sizeof(img_013));
+    scroll_left();
     for(int i = 0; i <  2; i++) display_image_blocking(img_014, sizeof(img_014));
+    scroll_left();
     for(int i = 0; i <  2; i++) display_image_blocking(img_000, sizeof(img_000));
     for(int i = 0; i <  1; i++) display_image_blocking(img_018, sizeof(img_018));
     for(int i = 0; i <  1; i++) display_image_blocking(img_019, sizeof(img_019));
@@ -155,11 +208,28 @@ int main (void){
     //command_write(0x02); // set address mode - page
 
     pixel_write(SCREEN_BYTES-1, 0x00);
+    //pixel_write(SCREEN_BYTES-1, 0xFF);
 
     timer_setup();
 
+    //_delay_ms(1000);
+    //display_image_scrolled(img_000, sizeof(img_000), 0);
+    //_delay_ms(1000);
+    //display_image_scrolled(img_000, sizeof(img_000), 10);
+    global_scroll_offset = 0;
+    global_scroll_direction = 0;
+
     while(1){
         animate();
+        //for(int i = 0; i < 255; i++){
+        //    animate();
+        //    scroll_right();
+        //}
+        //for(int i = 0; i < 255; i++){
+        //    animate();
+        //    scroll_left();
+        //}
+    //    scroll();
     }
 }
 
