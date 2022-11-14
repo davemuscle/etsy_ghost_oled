@@ -48,21 +48,24 @@ The C-code can then loop through the arrays and display them on the screen.
 ## Building
 
 ```
-    # create header files from bitmaps
-    cd oled
-    make
-    
-    # build software
-    cd sw
-    make
+# create header files from bitmaps
+cd oled
+make
 
-    # create fpga design
-    cd fpga
-    make
-    # load onto hardware
-    make prog
-    # open system-console
-    make console
-    # load ATTiny flash (within system-console)
-    source flash.tcl
+# build software
+cd sw
+make
+
+# create fpga design
+cd fpga
+make
+
+# load onto hardware
+make prog
+
+# open system-console
+make console
+
+# load ATTiny flash (within system-console)
+source flash.tcl
 ```
