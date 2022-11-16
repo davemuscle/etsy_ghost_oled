@@ -13,10 +13,10 @@
 #define SPI_DELAY         1
 #define SCREEN_PIXELS     8192
 #define SCREEN_BYTES      1024
-#define FRAME_TOGGLE_MAX  1
+#define FRAME_TOGGLE_MAX  3
 #define SCROLL_COLUMN_MIN 5
 #define SCROLL_COLUMN_MAX 95
-#define SCROLL_STEP       3
+#define SCROLL_STEP       2
 
 volatile uint8_t frame_advance = 0;
 volatile uint8_t frame_toggle = 0;
@@ -163,21 +163,21 @@ void scroll_right(){
 void animate(){
     for(int i = 0; i < 15; i++) display_image_blocking(img_000, sizeof(img_000));
     scroll_right();
-    for(int i = 0; i <  2; i++) display_image_blocking(img_008, sizeof(img_008));
+    for(int i = 0; i <  3; i++) display_image_blocking(img_008, sizeof(img_008));
     scroll_right();
-    for(int i = 0; i <  1; i++) display_image_blocking(img_010, sizeof(img_010));
+    for(int i = 0; i <  2; i++) display_image_blocking(img_010, sizeof(img_010));
     scroll_right();
-    for(int i = 0; i <  2; i++) display_image_blocking(img_011, sizeof(img_011));
+    for(int i = 0; i <  7; i++) display_image_blocking(img_011, sizeof(img_011));
     scroll_left();
-    for(int i = 0; i <  2; i++) display_image_blocking(img_013, sizeof(img_013));
+    for(int i = 0; i <  3; i++) display_image_blocking(img_013, sizeof(img_013));
     scroll_left();
     for(int i = 0; i <  2; i++) display_image_blocking(img_014, sizeof(img_014));
     scroll_left();
     for(int i = 0; i <  2; i++) display_image_blocking(img_000, sizeof(img_000));
-    for(int i = 0; i <  1; i++) display_image_blocking(img_018, sizeof(img_018));
-    for(int i = 0; i <  1; i++) display_image_blocking(img_019, sizeof(img_019));
-    for(int i = 0; i <  1; i++) display_image_blocking(img_020, sizeof(img_020));
-    for(int i = 0; i <  1; i++) display_image_blocking(img_000, sizeof(img_000));
+    for(int i = 0; i <  3; i++) display_image_blocking(img_018, sizeof(img_018));
+    for(int i = 0; i <  3; i++) display_image_blocking(img_019, sizeof(img_019));
+    for(int i = 0; i <  3; i++) display_image_blocking(img_020, sizeof(img_020));
+    for(int i = 0; i <  3; i++) display_image_blocking(img_000, sizeof(img_000));
     for(int i = 0; i <  3; i++) display_image_blocking(img_022, sizeof(img_022));
 }
 
